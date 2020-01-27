@@ -2,38 +2,66 @@
 <html>
     <head>
         <title>device orientation/device motion</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="style.css">
         <script src="jquery-ui.min.js"></script>
     </head>
 
     <body>
-        <div id="orientation"></div>
-        <div id="motion"></div>
+        <button type="button" id="btn" class="btn btn-primary">Start/Stop Register</button>
+        <ul id="orientation"></ul>
+        <ul id="motion"></ul>
     </body>
 
     <script>
-    $(document).ready(function(){       
-        if(window.DeviceOrientationEvent) {
-            window.addEventListener("deviceorientation", function(event){    
-                var alpha = event.alpha;
-                var beta = event.beta;
-                var gamma = event.gamma;
-                var time = Date.now();
-                $("#orientation").html("<ul><li>Alpha : " + alpha + "</li><li>Beta : " + beta + "</li><li>Gamma : " + gamma + "</li></ul>"); 
-                console.log(time);
-            }, false);
+    $(document).ready(function(){            
+        function addOrientationToLocalStorage(){
+                window.addEventListener("deviceorientation", function(event){    
+                    var alpha = event.alpha;
+                    var beta = event.beta;
+                    var gamma = event.gamma;
+                    var time = Date.now();
+                    
+                    localStorage.setItem("alpha", alpha);
+                    localStorage.setItem("beta", beta);
+                    localStorage.setItem("gamma", gamma);
+                    localStorage.setItem("time", time);
+                }, false);
+            }
+            
+        function getOrientation(){
+            var alpha = localStorage.getItem("alpha")
+            var beta = localStorage.getItem("beta")
+            var gamma = localStorage.getItem("gamma")
+            var time = localStorage.getItem("time")
+        
+            $('#orientation').append("<li>" + alpha + "</li><li>" + beta + "</li><li>" + gamma + "</li><li>" + time + "</li>")
         }
-
-        if(window.DeviceMotionEvent) {
+        
+        function addMotionToLocalStorage(){
             window.addEventListener("devicemotion", function(event){
                 var x = event.accelerationIncludingGravity.x;
                 var y = event.accelerationIncludingGravity.y;
                 var z = event.accelerationIncludingGravity.z;
-                var time = Date.now();
-                $("#motion").html("<ul><li>X : " + x + "</li><li>Y : " + y + "</li><li>Z : " + z + "</li></ul>"); 
+                var t = Date.now();
+                
+                localStorage.setItem("x", x);
+                localStorage.setItem("y", y);
+                localStorage.setItem("z", z);
+                localStorage.setItem("t", t);
             }, false);
         }
-   
+
+        function both(){
+            if(window.DeviceOrientationEvent) {
+                addOrientationToLocalStorage()
+                getOrientation()
+            }
+        }
+
+        $('btn').click(both(), 3000)
 })
+
+
     </script>
 </html> 
